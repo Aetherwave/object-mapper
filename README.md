@@ -1,5 +1,7 @@
 # map-obj-lib
 
+[![Build Status](https://travis-ci.org/schornio/map-obj-lib.svg)](https://travis-ci.org/schornio/map-obj-lib)
+
 ## Usage
 
 ### _constructor(map, options)
