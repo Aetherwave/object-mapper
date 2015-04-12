@@ -1,6 +1,6 @@
 {
   "name": "map-obj-lib",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Map javascript objects by dot notation and other cool stuff",
   "main": "index.js",
   "scripts": {
