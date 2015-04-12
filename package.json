@@ -1,0 +1,30 @@
+{
+  "name": "map-obj-lib",
+  "version": "0.0.0",
+  "description": "Map javascript objects by dot notation and other cool stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover _mocha --report html --dir ./report/coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/schornio/map-obj-lib.git"
+  },
+  "keywords": [
+    "map",
+    "object",
+    "dot-notation",
+    "mapper"
+  ],
+  "author": "Thomas Schorn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/schornio/map-obj-lib/issues"
+  },
+  "homepage": "https://github.com/schornio/map-obj-lib",
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "istanbul": "^0.3.13",
+    "mocha": "^2.2.4"
+  }
+}
