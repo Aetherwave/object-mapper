@@ -2,6 +2,24 @@
 
 ## Usage
 
+### _constructor(map, options)
+
+- `map`: map schema
+- `options`: (optional) configuration
+  - `strictMode`: error on unsuccessful mapping (default: ignore)
+
+### prototype.map(obj, callback)
+
+- `obj`: object to map
+- `callback(error, obj)`: on mapping finished
+
+### Map Schema
+
+    {
+      <string: destination name>: <string: source path>,
+      <string: destination name>: <object: nested schema>
+    }
+
 ### Example
 
     var MapObjLib = require('map-obj-lib');
