@@ -51,14 +51,20 @@ function mapObject(obj, map, options, callback) {
 
 function mapString(obj, map, options, callback) {
   var value;
+  var scope = obj;
   var contextPath = map.match(/^\$(.*)/);
 
   if(contextPath) {
-    obj = options.context;
+    scope = options.context;
     map = contextPath[1];
   }
 
-  value = MapObjLib.getByPath(map, obj);
+  value = MapObjLib.getByPath(map, scope);
+
+  if(typeof(value) === 'function') {
+    value(obj, options, callback);
+    return;
+  }
 
   if(value === null) {
     if(options.strictMode) {

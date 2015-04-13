@@ -116,6 +116,51 @@ describe('map-obj-lib', function (done) {
     });
   });
 
+  it('should call a function, when provided', function (done) {
+    var functionPropertyCalled = false;
+    var contextFunctionCalled = true;
+
+    var obj = {
+      simpleProperty: 42,
+      functionProperty: function (_obj, options, callback) {
+        expect(_obj).to.be(obj);
+        expect(options.context).to.be(context);
+        functionPropertyCalled = true;
+        callback(null, 126);
+      }
+    };
+
+    var context = {
+      contextFunction: function (_obj, options, callback) {
+        expect(_obj).to.be(obj);
+        expect(options.context).to.be(context);
+        contextFunctionCalled = true;
+        callback(null, 23);
+      }
+    };
+
+    var map = {
+      flattern: 'functionProperty',
+      explode: {
+        child: '$contextFunction'
+      }
+    };
+
+    var objMap = new MapObjLib(map, { context: context });
+    objMap.map(obj, function(error, result) {
+      expect(error).to.not.be.ok();
+      expect(result).to.eql({
+        flattern: 126,
+        explode: {
+          child: 23
+        }
+      });
+      expect(functionPropertyCalled).to.be.ok();
+      expect(contextFunctionCalled).to.be.ok();
+      done();
+    });
+  });
+
   it('should get a value by it\'s path', function () {
     var obj = {
       value1: 'a',
