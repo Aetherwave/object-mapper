@@ -50,7 +50,15 @@ function mapObject(obj, map, options, callback) {
 }
 
 function mapString(obj, map, options, callback) {
-  var value = MapObjLib.getByPath(map, obj);
+  var value;
+  var contextPath = map.match(/^\$(.*)/);
+
+  if(contextPath) {
+    obj = options.context;
+    map = contextPath[1];
+  }
+
+  value = MapObjLib.getByPath(map, obj);
 
   if(value === null) {
     if(options.strictMode) {

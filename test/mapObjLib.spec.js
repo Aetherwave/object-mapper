@@ -84,6 +84,38 @@ describe('map-obj-lib', function (done) {
     });
   });
 
+  it('should map by provided context "$"-prefix', function (done) {
+    var obj = {
+      simpleProperty: 42,
+      complexProperty: {
+        child: 126
+      }
+    };
+
+    var context = {
+      contextProp: 23
+    };
+
+    var map = {
+      flattern: 'complexProperty.child',
+      explode: {
+        child: '$contextProp'
+      }
+    };
+
+    var objMap = new MapObjLib(map, { context: context });
+    objMap.map(obj, function(error, result) {
+      expect(error).to.not.be.ok();
+      expect(result).to.eql({
+        flattern: 126,
+        explode: {
+          child: 23
+        }
+      });
+      done();
+    });
+  });
+
   it('should get a value by it\'s path', function () {
     var obj = {
       value1: 'a',

@@ -9,6 +9,7 @@
 - `map`: map schema
 - `options`: (optional) configuration
   - `strictMode`: error on unsuccessful mapping (default: ignore)
+  - `context`: provide a context object
 
 ### prototype.map(obj, callback)
 
@@ -19,6 +20,7 @@
 
     {
       <string: destination name>: <string: source path>,
+      <string: destination name>: <string: '$' + context source path>,
       <string: destination name>: <object: nested schema>
     }
 
