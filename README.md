@@ -1,6 +1,6 @@
-# map-obj-lib
+# map-object
 
-[![Build Status](https://travis-ci.org/schornio/map-obj-lib.svg)](https://travis-ci.org/schornio/map-obj-lib)
+[![Build Status](https://travis-ci.org/schornio/map-object.svg)](https://travis-ci.org/schornio/map-object)
 
 ## Usage
 
@@ -26,7 +26,7 @@
 
 ### Example
 
-    var MapObjLib = require('map-obj-lib');
+    var MapObjLib = require('@schornio/map-object');
 
     var obj = {
       simpleProperty: 42,
