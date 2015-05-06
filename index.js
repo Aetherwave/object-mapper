@@ -85,6 +85,7 @@ function buildObject(destinationProperties, callback) {
     }
 
     for (var i = 0; i < destinationProperties.length; i++) {
+      if(result[i] === undefined) continue;
       if(result[i] === null) continue;
 
       mappedObj[destinationProperties[i]] = result[i];

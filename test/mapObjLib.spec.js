@@ -61,6 +61,25 @@ describe('map-obj-lib', function (done) {
     });
   });
 
+  it('should ignore empty (undefined) values on method call', function (done) {
+    var obj = {
+      undefinedProperty: function (_obj, options, callback) {
+        callback();
+      }
+    };
+
+    var map = {
+      some: 'undefinedProperty'
+    };
+
+    var objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_OFF });
+    objMap.map(obj, function(error, result) {
+      expect(error).to.not.be.ok();
+      expect(result).to.eql(null);
+      done();
+    });
+  });
+
   it('should\'nt ignore empty (null) values on strict mode', function (done) {
     var obj = {
       simpleProperty: 42,
