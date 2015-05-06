@@ -1,6 +1,6 @@
 {
   "name": "@schornio/map-object",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Map javascript objects by dot notation and other cool stuff",
   "main": "index.js",
   "scripts": {
