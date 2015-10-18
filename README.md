@@ -1,6 +1,6 @@
 # Object Mapper
 
-[![Build Status](https://travis-ci.org/schornio/map-object.svg)](https://travis-ci.org/schornio/map-object)
+[![Build Status](https://travis-ci.org/Aetherwave/object-mapper.svg)](https://travis-ci.org/Aetherwave/object-mapper)
 
 Maps objects by dot notation
 
