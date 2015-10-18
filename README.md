@@ -4,29 +4,30 @@
 
 ## Usage
 
-### _constructor(map, options)
+### ObjectMapper#constructor(mapSchema[, options])
 
-- `map`: map schema
+- `mapSchema`: map schema
 - `options`: (optional) configuration
-  - `strictMode`: error on unsuccessful mapping (default: ignore)
-  - `context`: provide a context object
+  - `context`: Object, context, default: `{}`
+  - `mapEachElement`: Boolean, error if map path doesn't exist, default: `false`
+  - `stripEmptyObjects`: Boolean, ignore empty objects, default: `true`
 
-### prototype.map(obj, callback)
+### map(mixed[, mapSchema])
 
-- `obj`: object to map
-- `callback(error, obj)`: on mapping finished
+- `mixed`: object to map
+- `mapSchema`: map schema, default (this.mapSchema)
 
 ### Map Schema
 
     {
       <string: destination name>: <string: source path>,
-      <string: destination name>: <string: '$' + context source path>,
+      <string: destination name>: <string: '$.' + context source path>,
       <string: destination name>: <object: nested schema>
     }
 
 ### Example
 
-    var MapObjLib = require('@schornio/map-object');
+    var ObjectMapper = require('@schornio/object-mapper');
 
     var obj = {
       simpleProperty: 42,
@@ -43,7 +44,7 @@
     };
 
     var objMap = new MapObjLib(map);
-    objMap.map(obj, function(error, result) {
+    objMap.map(obj);
       /* result == {
         flattern: 126,
         explode: {

@@ -5,7 +5,7 @@ let expect = require('chai').expect;
 describe('Object Mapper', function (done) {
   let ObjectMapper = require(__dirname + '/../index.js');
 
-  it('should map objects by dot notation', function (done) {
+  it('should map objects by dot notation', function () {
     let obj = {
       simpleProperty: 42,
       complexProperty: {
@@ -21,24 +21,18 @@ describe('Object Mapper', function (done) {
     };
 
     let objMap = new ObjectMapper(map);
-    objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok;
-      expect(result).to.eql({
-        flattern: 126,
-        explode: {
-          child: 42
-        }
-      });
-      done();
+    expect(objMap.map(obj)).to.be.deep.equal({
+      flattern: 126,
+      explode: {
+        child: 42
+      }
     });
   });
 
-  it('should ignore empty (null) values', function (done) {
+  it('should ignore undefined paths', function () {
     let obj = {
-      simpleProperty: 42,
-      complexProperty: {
-        child: 126
-      }
+      value: 42,
+      nullValue: null
     };
 
     let map = {
@@ -46,39 +40,18 @@ describe('Object Mapper', function (done) {
       explode: {
         child: 'simplePropertyNULL'
       },
-      some: 'simpleProperty'
+      value: 'value',
+      nullValue: 'nullValue'
     };
 
-    let objMap = new ObjectMapper(map, { strictMode: ObjectMapper.STRICT_OFF });
-    objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok;
-      expect(result).to.eql({
-        some: 42
-      });
-      done();
+    let objMap = new ObjectMapper(map);
+    expect(objMap.map(obj)).to.deep.equal({
+      value: 42,
+      nullValue: null
     });
   });
 
-  it('should ignore empty (undefined) values on method call', function (done) {
-    let obj = {
-      undefinedProperty: function (_obj, options, callback) {
-        callback();
-      }
-    };
-
-    let map = {
-      some: 'undefinedProperty'
-    };
-
-    let objMap = new ObjectMapper(map, { strictMode: ObjectMapper.STRICT_OFF });
-    objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok;
-      expect(result).to.eql(null);
-      done();
-    });
-  });
-
-  it('should\'nt ignore empty (null) values on strict mode', function (done) {
+  it('should throw an error if map each element is forced', function () {
     let obj = {
       simpleProperty: 42,
       complexProperty: {
@@ -93,15 +66,13 @@ describe('Object Mapper', function (done) {
       }
     };
 
-    let objMap = new ObjectMapper(map, { strictMode: ObjectMapper.STRICT_ON });
-    objMap.map(obj, function(error, result) {
-      expect(error).to.be.ok;
-      expect(result).to.not.be.ok;
-      done();
-    });
+    let objMap = new ObjectMapper(map, { mapEachElement: true });
+    expect(function () {
+      objMap.map(obj);
+    }).to.throw(/Could not map elements/);
   });
 
-  it('should map by provided context "$"-prefix', function (done) {
+  it('should map by provided context "$."-prefix', function () {
     let obj = {
       simpleProperty: 42,
       complexProperty: {
@@ -116,79 +87,24 @@ describe('Object Mapper', function (done) {
     let map = {
       flattern: 'complexProperty.child',
       explode: {
-        child: '$contextProp'
+        child: '$.contextProp'
       }
     };
 
     let objMap = new ObjectMapper(map, { context: context });
-    objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok;
-      expect(result).to.eql({
-        flattern: 126,
-        explode: {
-          child: 23
-        }
-      });
-      done();
-    });
-  });
-
-  it('should call a function, when provided', function (done) {
-    let functionPropertyCalled = false;
-    let contextFunctionCalled = true;
-
-    let obj = {
-      simpleProperty: 42,
-      functionProperty: function (_obj, options, callback) {
-        expect(_obj).to.be.equal(obj);
-        expect(options.context).to.be.equal(context);
-        functionPropertyCalled = true;
-        callback(null, 126);
-      }
-    };
-
-    let context = {
-      contextFunction: function (_obj, options, callback) {
-        expect(_obj).to.be.equal(obj);
-        expect(options.context).to.be.equal(context);
-        contextFunctionCalled = true;
-        callback(null, 23);
-      }
-    };
-
-    let map = {
-      flattern: 'functionProperty',
+    expect(objMap.map(obj)).to.deep.equal({
+      flattern: 126,
       explode: {
-        child: '$contextFunction'
+        child: 23
       }
-    };
-
-    let objMap = new ObjectMapper(map, { context: context });
-    objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok;
-      expect(result).to.eql({
-        flattern: 126,
-        explode: {
-          child: 23
-        }
-      });
-      expect(functionPropertyCalled).to.be.ok;
-      expect(contextFunctionCalled).to.be.ok;
-      done();
     });
   });
 
-  it('should get a value by it\'s path', function () {
-    let obj = {
-      value1: 'a',
-      value2: {
-        value21: 'b'
-      }
-    };
-
-    expect(ObjectMapper.getByPath('value1', obj)).to.be.equal('a');
-    expect(ObjectMapper.getByPath('value2.value21', obj)).to.be.equal('b');
-    expect(ObjectMapper.getByPath('value3', obj)).to.not.be.ok;
+  it('should throw an error on invalid map schema', function () {
+    let objectMapper = new ObjectMapper();
+    expect(function () {
+      objectMapper.map({}, NaN);
+    }).to.throw(/Invalid map schema/);
   });
 
 });

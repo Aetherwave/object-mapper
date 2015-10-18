@@ -1,100 +1,72 @@
 'use strict';
 
-let _async = require('async');
+let _ = require('lodash');
 
 class ObjectMapper {
-  constructor(map, options) {
-    this.mapConfig = map;
-    this.options = options || {};
+  constructor(mapSchema, options) {
+    this.mapSchema = mapSchema;
+    this.options = _.defaultsDeep(options || {}, {
+      context: {},
+      mapEachElement: false,
+      stripEmptyObjects: true
+    });
   }
 
-  map(obj, callback) {
-    mapObject(obj, this.mapConfig, this.options, callback);
+  map(mixed, mapSchema) {
+    if(mapSchema === undefined) {
+      mapSchema = this.mapSchema;
+    }
+
+    let value;
+
+    if(_.isString(mapSchema)) {
+      return this.mapStringSchema(mixed, mapSchema);
+    }
+
+    if(_.isObject(mapSchema)) {
+      return this.mapObjectSchema(mixed, mapSchema);
+    }
+
+    throw Error(`Invalid map schema: ${mapSchema}`);
   }
 
-  static getByPath(path, obj) {
-    let pathElements = path.split('.');
-    let scope = obj;
+  mapStringSchema(mixed, mapSchema) {
+    let contextPath = mapSchema.match(/^\$\.(.*)/);
+    if(contextPath) {
+      return _.get(this.options.context, contextPath[1]);
+    }
 
-    for (let i = 0; i < pathElements.length; i++) {
-      scope = scope[pathElements[i]];
+    return _.get(mixed, mapSchema);
+  }
 
-      if(scope === undefined) {
-        return null;
+  mapObjectSchema(mixed, mapSchema) {
+    let value = {};
+    let valueCount = 0;
+    let schemaProperties = Object.getOwnPropertyNames(mapSchema);
+    let undefinedProperties = [];
+
+    for (let propertyName of schemaProperties) {
+      value[propertyName] = this.map(mixed, mapSchema[propertyName]);
+
+      if(value[propertyName] !== undefined) {
+        valueCount += 1;
+      } else {
+        if(this.options.mapEachElement) {
+          undefinedProperties.push(propertyName);
+        }
       }
     }
 
-    return scope;
+    if(this.options.mapEachElement && valueCount !== schemaProperties.length) {
+      throw new Error(`Could not map elements: [ ${ undefinedProperties.join(', ') } ]`);
+    }
+
+    if(this.options.stripEmptyObjects && valueCount === 0) {
+      return undefined;
+    }
+
+    return _.omit(value, _.isUndefined);
   }
-}
-
-ObjectMapper.STRICT_ON = true;
-ObjectMapper.STRICT_OFF = false;
-
-function mapObject(obj, map, options, callback) {
-  let destinationProperties = Object.getOwnPropertyNames(map);
-
-  _async.map(destinationProperties, function (destinationProperty, callback) {
-    switch(typeof(map[destinationProperty])) {
-      case 'string':
-        mapString(obj, map[destinationProperty], options, callback);
-        break;
-      default:
-        mapObject(obj, map[destinationProperty], options, callback);
-        break;
-    }
-  }, buildObject(destinationProperties, callback));
-}
-
-function mapString(obj, map, options, callback) {
-  let value;
-  let scope = obj;
-  let contextPath = map.match(/^\$(.*)/);
-
-  if(contextPath) {
-    scope = options.context;
-    map = contextPath[1];
-  }
-
-  value = ObjectMapper.getByPath(map, scope);
-
-  if(typeof(value) === 'function') {
-    value(obj, options, callback);
-    return;
-  }
-
-  if(value === null) {
-    if(options.strictMode) {
-      return callback(new Error("\""+ map +"\" is not defined"));
-    }
-  }
-
-  callback(null, value);
-}
-
-function buildObject(destinationProperties, callback) {
-  return function (error, result) {
-    let mappedObj = {};
-    let isEmpty = true;
-
-    if(error) {
-      return callback(error);
-    }
-
-    for (let i = 0; i < destinationProperties.length; i++) {
-      if(result[i] === undefined) continue;
-      if(result[i] === null) continue;
-
-      mappedObj[destinationProperties[i]] = result[i];
-      isEmpty = false;
-    }
-
-    if(!isEmpty) {
-      callback(null, mappedObj);
-    } else {
-      callback(null, null);
-    }
-  };
 }
 
 module.exports = ObjectMapper;
