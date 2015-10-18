@@ -1,28 +1,26 @@
 'use strict';
-/* jslint node: true */
-/* global describe, it */
 
-var expect = require('expect.js');
+let expect = require('expect.js');
 
 describe('map-obj-lib', function (done) {
-  var MapObjLib = require(__dirname + '/../index.js');
+  let MapObjLib = require(__dirname + '/../index.js');
 
   it('should map objects by dot notation', function (done) {
-    var obj = {
+    let obj = {
       simpleProperty: 42,
       complexProperty: {
         child: 126
       }
     };
 
-    var map = {
+    let map = {
       flattern: 'complexProperty.child',
       explode: {
         child: 'simpleProperty'
       }
     };
 
-    var objMap = new MapObjLib(map);
+    let objMap = new MapObjLib(map);
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql({
@@ -36,14 +34,14 @@ describe('map-obj-lib', function (done) {
   });
 
   it('should ignore empty (null) values', function (done) {
-    var obj = {
+    let obj = {
       simpleProperty: 42,
       complexProperty: {
         child: 126
       }
     };
 
-    var map = {
+    let map = {
       flattern: 'complexPropertyNULL.child',
       explode: {
         child: 'simplePropertyNULL'
@@ -51,7 +49,7 @@ describe('map-obj-lib', function (done) {
       some: 'simpleProperty'
     };
 
-    var objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_OFF });
+    let objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_OFF });
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql({
@@ -62,17 +60,17 @@ describe('map-obj-lib', function (done) {
   });
 
   it('should ignore empty (undefined) values on method call', function (done) {
-    var obj = {
+    let obj = {
       undefinedProperty: function (_obj, options, callback) {
         callback();
       }
     };
 
-    var map = {
+    let map = {
       some: 'undefinedProperty'
     };
 
-    var objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_OFF });
+    let objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_OFF });
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql(null);
@@ -81,21 +79,21 @@ describe('map-obj-lib', function (done) {
   });
 
   it('should\'nt ignore empty (null) values on strict mode', function (done) {
-    var obj = {
+    let obj = {
       simpleProperty: 42,
       complexProperty: {
         child: 126
       }
     };
 
-    var map = {
+    let map = {
       flattern: 'complexPropertyNULL.child',
       explode: {
         child: 'simplePropertyNULL'
       }
     };
 
-    var objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_ON });
+    let objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_ON });
     objMap.map(obj, function(error, result) {
       expect(error).to.be.ok();
       expect(result).to.not.be.ok();
@@ -104,25 +102,25 @@ describe('map-obj-lib', function (done) {
   });
 
   it('should map by provided context "$"-prefix', function (done) {
-    var obj = {
+    let obj = {
       simpleProperty: 42,
       complexProperty: {
         child: 126
       }
     };
 
-    var context = {
+    let context = {
       contextProp: 23
     };
 
-    var map = {
+    let map = {
       flattern: 'complexProperty.child',
       explode: {
         child: '$contextProp'
       }
     };
 
-    var objMap = new MapObjLib(map, { context: context });
+    let objMap = new MapObjLib(map, { context: context });
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql({
@@ -136,10 +134,10 @@ describe('map-obj-lib', function (done) {
   });
 
   it('should call a function, when provided', function (done) {
-    var functionPropertyCalled = false;
-    var contextFunctionCalled = true;
+    let functionPropertyCalled = false;
+    let contextFunctionCalled = true;
 
-    var obj = {
+    let obj = {
       simpleProperty: 42,
       functionProperty: function (_obj, options, callback) {
         expect(_obj).to.be(obj);
@@ -149,7 +147,7 @@ describe('map-obj-lib', function (done) {
       }
     };
 
-    var context = {
+    let context = {
       contextFunction: function (_obj, options, callback) {
         expect(_obj).to.be(obj);
         expect(options.context).to.be(context);
@@ -158,14 +156,14 @@ describe('map-obj-lib', function (done) {
       }
     };
 
-    var map = {
+    let map = {
       flattern: 'functionProperty',
       explode: {
         child: '$contextFunction'
       }
     };
 
-    var objMap = new MapObjLib(map, { context: context });
+    let objMap = new MapObjLib(map, { context: context });
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql({
@@ -181,7 +179,7 @@ describe('map-obj-lib', function (done) {
   });
 
   it('should get a value by it\'s path', function () {
-    var obj = {
+    let obj = {
       value1: 'a',
       value2: {
         value21: 'b'
@@ -193,8 +191,4 @@ describe('map-obj-lib', function (done) {
     expect(MapObjLib.getByPath('value3', obj)).to.not.be.ok();
   });
 
-  it('should always return a new MapObjLib', function () {
-    var cMapObjLib = MapObjLib;
-    expect(cMapObjLib()).to.be.a(MapObjLib);
-  });
 });

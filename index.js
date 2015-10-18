@@ -1,43 +1,40 @@
 'use strict';
-/* jslint node: true */
 
-var async = require('async');
+let _async = require('async');
 
-function MapObjLib(map, options) {
-  if(!(this instanceof MapObjLib)) {
-    return new MapObjLib(map);
+class MapObjLib {
+  constructor(map, options) {
+    this.mapConfig = map;
+    this.options = options || {};
   }
 
-  this.mapConfig = map;
-  this.options = options || {};
+  map(obj, callback) {
+    mapObject(obj, this.mapConfig, this.options, callback);
+  }
+
+  static getByPath(path, obj) {
+    let pathElements = path.split('.');
+    let scope = obj;
+
+    for (let i = 0; i < pathElements.length; i++) {
+      scope = scope[pathElements[i]];
+
+      if(scope === undefined) {
+        return null;
+      }
+    }
+
+    return scope;
+  }
 }
 
 MapObjLib.STRICT_ON = true;
 MapObjLib.STRICT_OFF = false;
 
-MapObjLib.prototype.map = function (obj, callback) {
-  mapObject(obj, this.mapConfig, this.options, callback);
-};
-
-MapObjLib.getByPath = function (path, obj) {
-  var pathElements = path.split('.');
-  var scope = obj;
-
-  for (var i = 0; i < pathElements.length; i++) {
-    scope = scope[pathElements[i]];
-
-    if(scope === undefined) {
-      return null;
-    }
-  }
-
-  return scope;
-};
-
 function mapObject(obj, map, options, callback) {
-  var destinationProperties = Object.getOwnPropertyNames(map);
+  let destinationProperties = Object.getOwnPropertyNames(map);
 
-  async.map(destinationProperties, function (destinationProperty, callback) {
+  _async.map(destinationProperties, function (destinationProperty, callback) {
     switch(typeof(map[destinationProperty])) {
       case 'string':
         mapString(obj, map[destinationProperty], options, callback);
@@ -50,9 +47,9 @@ function mapObject(obj, map, options, callback) {
 }
 
 function mapString(obj, map, options, callback) {
-  var value;
-  var scope = obj;
-  var contextPath = map.match(/^\$(.*)/);
+  let value;
+  let scope = obj;
+  let contextPath = map.match(/^\$(.*)/);
 
   if(contextPath) {
     scope = options.context;
@@ -77,14 +74,14 @@ function mapString(obj, map, options, callback) {
 
 function buildObject(destinationProperties, callback) {
   return function (error, result) {
-    var mappedObj = {};
-    var isEmpty = true;
+    let mappedObj = {};
+    let isEmpty = true;
 
     if(error) {
       return callback(error);
     }
 
-    for (var i = 0; i < destinationProperties.length; i++) {
+    for (let i = 0; i < destinationProperties.length; i++) {
       if(result[i] === undefined) continue;
       if(result[i] === null) continue;
 
