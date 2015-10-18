@@ -1,103 +1,72 @@
 'use strict';
-/* jslint node: true */
 
-var async = require('async');
+let _ = require('lodash');
 
-function MapObjLib(map, options) {
-  if(!(this instanceof MapObjLib)) {
-    return new MapObjLib(map);
+class ObjectMapper {
+  constructor(mapSchema, options) {
+    this.mapSchema = mapSchema;
+    this.options = _.defaultsDeep(options || {}, {
+      context: {},
+      mapEachElement: false,
+      stripEmptyObjects: true
+    });
   }
 
-  this.mapConfig = map;
-  this.options = options || {};
+  map(mixed, mapSchema) {
+    if(mapSchema === undefined) {
+      mapSchema = this.mapSchema;
+    }
+
+    let value;
+
+    if(_.isString(mapSchema)) {
+      return this.mapStringSchema(mixed, mapSchema);
+    }
+
+    if(_.isObject(mapSchema)) {
+      return this.mapObjectSchema(mixed, mapSchema);
+    }
+
+    throw Error(`Invalid map schema: ${mapSchema}`);
+  }
+
+  mapStringSchema(mixed, mapSchema) {
+    let contextPath = mapSchema.match(/^\$\.(.*)/);
+    if(contextPath) {
+      return _.get(this.options.context, contextPath[1]);
+    }
+
+    return _.get(mixed, mapSchema);
+  }
+
+  mapObjectSchema(mixed, mapSchema) {
+    let value = {};
+    let valueCount = 0;
+    let schemaProperties = Object.getOwnPropertyNames(mapSchema);
+    let undefinedProperties = [];
+
+    for (let propertyName of schemaProperties) {
+      value[propertyName] = this.map(mixed, mapSchema[propertyName]);
+
+      if(value[propertyName] !== undefined) {
+        valueCount += 1;
+      } else {
+        if(this.options.mapEachElement) {
+          undefinedProperties.push(propertyName);
+        }
+      }
+    }
+
+    if(this.options.mapEachElement && valueCount !== schemaProperties.length) {
+      throw new Error(`Could not map elements: [ ${ undefinedProperties.join(', ') } ]`);
+    }
+
+    if(this.options.stripEmptyObjects && valueCount === 0) {
+      return undefined;
+    }
+
+    return _.omit(value, _.isUndefined);
+  }
 }
 
-MapObjLib.STRICT_ON = true;
-MapObjLib.STRICT_OFF = false;
-
-MapObjLib.prototype.map = function (obj, callback) {
-  mapObject(obj, this.mapConfig, this.options, callback);
-};
-
-MapObjLib.getByPath = function (path, obj) {
-  var pathElements = path.split('.');
-  var scope = obj;
-
-  for (var i = 0; i < pathElements.length; i++) {
-    scope = scope[pathElements[i]];
-
-    if(scope === undefined) {
-      return null;
-    }
-  }
-
-  return scope;
-};
-
-function mapObject(obj, map, options, callback) {
-  var destinationProperties = Object.getOwnPropertyNames(map);
-
-  async.map(destinationProperties, function (destinationProperty, callback) {
-    switch(typeof(map[destinationProperty])) {
-      case 'string':
-        mapString(obj, map[destinationProperty], options, callback);
-        break;
-      default:
-        mapObject(obj, map[destinationProperty], options, callback);
-        break;
-    }
-  }, buildObject(destinationProperties, callback));
-}
-
-function mapString(obj, map, options, callback) {
-  var value;
-  var scope = obj;
-  var contextPath = map.match(/^\$(.*)/);
-
-  if(contextPath) {
-    scope = options.context;
-    map = contextPath[1];
-  }
-
-  value = MapObjLib.getByPath(map, scope);
-
-  if(typeof(value) === 'function') {
-    value(obj, options, callback);
-    return;
-  }
-
-  if(value === null) {
-    if(options.strictMode) {
-      return callback(new Error("\""+ map +"\" is not defined"));
-    }
-  }
-
-  callback(null, value);
-}
-
-function buildObject(destinationProperties, callback) {
-  return function (error, result) {
-    var mappedObj = {};
-    var isEmpty = true;
-
-    if(error) {
-      return callback(error);
-    }
-
-    for (var i = 0; i < destinationProperties.length; i++) {
-      if(result[i] === undefined) continue;
-      if(result[i] === null) continue;
-
-      mappedObj[destinationProperties[i]] = result[i];
-      isEmpty = false;
-    }
-
-    if(!isEmpty) {
-      callback(null, mappedObj);
-    } else {
-      callback(null, null);
-    }
-  };
-}
-
-module.exports = MapObjLib;
+module.exports = ObjectMapper;
