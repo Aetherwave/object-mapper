@@ -2,7 +2,7 @@
 
 let _async = require('async');
 
-class MapObjLib {
+class ObjectMapper {
   constructor(map, options) {
     this.mapConfig = map;
     this.options = options || {};
@@ -28,8 +28,8 @@ class MapObjLib {
   }
 }
 
-MapObjLib.STRICT_ON = true;
-MapObjLib.STRICT_OFF = false;
+ObjectMapper.STRICT_ON = true;
+ObjectMapper.STRICT_OFF = false;
 
 function mapObject(obj, map, options, callback) {
   let destinationProperties = Object.getOwnPropertyNames(map);
@@ -56,7 +56,7 @@ function mapString(obj, map, options, callback) {
     map = contextPath[1];
   }
 
-  value = MapObjLib.getByPath(map, scope);
+  value = ObjectMapper.getByPath(map, scope);
 
   if(typeof(value) === 'function') {
     value(obj, options, callback);
@@ -97,4 +97,4 @@ function buildObject(destinationProperties, callback) {
   };
 }
 
-module.exports = MapObjLib;
+module.exports = ObjectMapper;

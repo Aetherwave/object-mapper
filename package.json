@@ -1,5 +1,5 @@
 {
-  "name": "@schornio/map-object",
+  "name": "@schornio/object-mapper",
   "version": "1.2.2",
   "description": "Map javascript objects by dot notation and other cool stuff",
   "main": "index.js",

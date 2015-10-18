@@ -2,8 +2,8 @@
 
 let expect = require('expect.js');
 
-describe('map-obj-lib', function (done) {
-  let MapObjLib = require(__dirname + '/../index.js');
+describe('Object Mapper', function (done) {
+  let ObjectMapper = require(__dirname + '/../index.js');
 
   it('should map objects by dot notation', function (done) {
     let obj = {
@@ -20,7 +20,7 @@ describe('map-obj-lib', function (done) {
       }
     };
 
-    let objMap = new MapObjLib(map);
+    let objMap = new ObjectMapper(map);
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql({
@@ -49,7 +49,7 @@ describe('map-obj-lib', function (done) {
       some: 'simpleProperty'
     };
 
-    let objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_OFF });
+    let objMap = new ObjectMapper(map, { strictMode: ObjectMapper.STRICT_OFF });
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql({
@@ -70,7 +70,7 @@ describe('map-obj-lib', function (done) {
       some: 'undefinedProperty'
     };
 
-    let objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_OFF });
+    let objMap = new ObjectMapper(map, { strictMode: ObjectMapper.STRICT_OFF });
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql(null);
@@ -93,7 +93,7 @@ describe('map-obj-lib', function (done) {
       }
     };
 
-    let objMap = new MapObjLib(map, { strictMode: MapObjLib.STRICT_ON });
+    let objMap = new ObjectMapper(map, { strictMode: ObjectMapper.STRICT_ON });
     objMap.map(obj, function(error, result) {
       expect(error).to.be.ok();
       expect(result).to.not.be.ok();
@@ -120,7 +120,7 @@ describe('map-obj-lib', function (done) {
       }
     };
 
-    let objMap = new MapObjLib(map, { context: context });
+    let objMap = new ObjectMapper(map, { context: context });
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql({
@@ -163,7 +163,7 @@ describe('map-obj-lib', function (done) {
       }
     };
 
-    let objMap = new MapObjLib(map, { context: context });
+    let objMap = new ObjectMapper(map, { context: context });
     objMap.map(obj, function(error, result) {
       expect(error).to.not.be.ok();
       expect(result).to.eql({
@@ -186,9 +186,9 @@ describe('map-obj-lib', function (done) {
       }
     };
 
-    expect(MapObjLib.getByPath('value1', obj)).to.be('a');
-    expect(MapObjLib.getByPath('value2.value21', obj)).to.be('b');
-    expect(MapObjLib.getByPath('value3', obj)).to.not.be.ok();
+    expect(ObjectMapper.getByPath('value1', obj)).to.be('a');
+    expect(ObjectMapper.getByPath('value2.value21', obj)).to.be('b');
+    expect(ObjectMapper.getByPath('value3', obj)).to.not.be.ok();
   });
 
 });
