@@ -1,7 +1,7 @@
 {
   "name": "@aetherwave/object-mapper",
   "version": "2.0.1",
-  "description": "Map javascript objects by dot notation and other cool stuff",
+  "description": "Maps objects by dot notation",
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha --report html --dir ./report/coverage"

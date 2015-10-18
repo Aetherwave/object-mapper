@@ -2,6 +2,12 @@
 
 [![Build Status](https://travis-ci.org/schornio/map-object.svg)](https://travis-ci.org/schornio/map-object)
 
+Maps objects by dot notation
+
+## Installation
+
+    npm install @aetherwave/object-mapper
+
 ## Usage
 
 ### ObjectMapper#constructor(mapSchema[, options])
@@ -52,3 +58,7 @@
         }
       }*/
     });
+
+## Test
+
+    npm test
