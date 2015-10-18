@@ -1,6 +1,6 @@
 'use strict';
 
-let expect = require('expect.js');
+let expect = require('chai').expect;
 
 describe('Object Mapper', function (done) {
   let ObjectMapper = require(__dirname + '/../index.js');
@@ -22,7 +22,7 @@ describe('Object Mapper', function (done) {
 
     let objMap = new ObjectMapper(map);
     objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok();
+      expect(error).to.not.be.ok;
       expect(result).to.eql({
         flattern: 126,
         explode: {
@@ -51,7 +51,7 @@ describe('Object Mapper', function (done) {
 
     let objMap = new ObjectMapper(map, { strictMode: ObjectMapper.STRICT_OFF });
     objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok();
+      expect(error).to.not.be.ok;
       expect(result).to.eql({
         some: 42
       });
@@ -72,7 +72,7 @@ describe('Object Mapper', function (done) {
 
     let objMap = new ObjectMapper(map, { strictMode: ObjectMapper.STRICT_OFF });
     objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok();
+      expect(error).to.not.be.ok;
       expect(result).to.eql(null);
       done();
     });
@@ -95,8 +95,8 @@ describe('Object Mapper', function (done) {
 
     let objMap = new ObjectMapper(map, { strictMode: ObjectMapper.STRICT_ON });
     objMap.map(obj, function(error, result) {
-      expect(error).to.be.ok();
-      expect(result).to.not.be.ok();
+      expect(error).to.be.ok;
+      expect(result).to.not.be.ok;
       done();
     });
   });
@@ -122,7 +122,7 @@ describe('Object Mapper', function (done) {
 
     let objMap = new ObjectMapper(map, { context: context });
     objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok();
+      expect(error).to.not.be.ok;
       expect(result).to.eql({
         flattern: 126,
         explode: {
@@ -140,8 +140,8 @@ describe('Object Mapper', function (done) {
     let obj = {
       simpleProperty: 42,
       functionProperty: function (_obj, options, callback) {
-        expect(_obj).to.be(obj);
-        expect(options.context).to.be(context);
+        expect(_obj).to.be.equal(obj);
+        expect(options.context).to.be.equal(context);
         functionPropertyCalled = true;
         callback(null, 126);
       }
@@ -149,8 +149,8 @@ describe('Object Mapper', function (done) {
 
     let context = {
       contextFunction: function (_obj, options, callback) {
-        expect(_obj).to.be(obj);
-        expect(options.context).to.be(context);
+        expect(_obj).to.be.equal(obj);
+        expect(options.context).to.be.equal(context);
         contextFunctionCalled = true;
         callback(null, 23);
       }
@@ -165,15 +165,15 @@ describe('Object Mapper', function (done) {
 
     let objMap = new ObjectMapper(map, { context: context });
     objMap.map(obj, function(error, result) {
-      expect(error).to.not.be.ok();
+      expect(error).to.not.be.ok;
       expect(result).to.eql({
         flattern: 126,
         explode: {
           child: 23
         }
       });
-      expect(functionPropertyCalled).to.be.ok();
-      expect(contextFunctionCalled).to.be.ok();
+      expect(functionPropertyCalled).to.be.ok;
+      expect(contextFunctionCalled).to.be.ok;
       done();
     });
   });
@@ -186,9 +186,9 @@ describe('Object Mapper', function (done) {
       }
     };
 
-    expect(ObjectMapper.getByPath('value1', obj)).to.be('a');
-    expect(ObjectMapper.getByPath('value2.value21', obj)).to.be('b');
-    expect(ObjectMapper.getByPath('value3', obj)).to.not.be.ok();
+    expect(ObjectMapper.getByPath('value1', obj)).to.be.equal('a');
+    expect(ObjectMapper.getByPath('value2.value21', obj)).to.be.equal('b');
+    expect(ObjectMapper.getByPath('value3', obj)).to.not.be.ok;
   });
 
 });
