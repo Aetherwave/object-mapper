@@ -1,4 +1,4 @@
-# map-object
+# Object Mapper
 
 [![Build Status](https://travis-ci.org/schornio/map-object.svg)](https://travis-ci.org/schornio/map-object)
 
@@ -12,7 +12,7 @@
   - `mapEachElement`: Boolean, error if map path doesn't exist, default: `false`
   - `stripEmptyObjects`: Boolean, ignore empty objects, default: `true`
 
-### map(mixed[, mapSchema])
+### ObjectMapper#map(mixed[, mapSchema])
 
 - `mixed`: object to map
 - `mapSchema`: map schema, default (this.mapSchema)
